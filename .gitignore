@@ -9,3 +9,8 @@ node_modules/
 cloudinary_python.txt
 kaggle.json
 .venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.pkl
+.env
