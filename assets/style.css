@@ -1,0 +1,172 @@
+/* Solar Power Prediction App - Professional Solar Theme */
+
+/* Main color scheme */
+:root {
+    --primary-color: #F39C12;
+    --secondary-color: #E67E22;
+    --accent-color: #D68910;
+    --success-color: #27AE60;
+    --text-primary: #2C3E50;
+    --text-secondary: #7F8C8D;
+}
+
+/* Primary button styling */
+.stButton>button {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 2rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px rgba(243, 156, 18, 0.3) !important;
+}
+
+.stButton>button:hover {
+    background-color: var(--secondary-color) !important;
+    box-shadow: 0 6px 12px rgba(243, 156, 18, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.stButton>button:active {
+    transform: translateY(0px) !important;
+}
+
+/* Slider styling */
+.stSlider>div>div>div>div {
+    background-color: var(--primary-color) !important;
+}
+
+.stSlider>div>div>div {
+    background-color: rgba(243, 156, 18, 0.2) !important;
+}
+
+/* Selectbox styling */
+.stSelectbox>div>div {
+    border-color: var(--primary-color) !important;
+}
+
+.stSelectbox>div>div:focus-within {
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+}
+
+/* Success message styling */
+.stSuccess {
+    background-color: rgba(39, 174, 96, 0.1) !important;
+    border-left: 4px solid var(--success-color) !important;
+}
+
+/* Info message styling */
+.stInfo {
+    background-color: rgba(243, 156, 18, 0.1) !important;
+    border-left: 4px solid var(--primary-color) !important;
+}
+
+/* Metric styling */
+.stMetric {
+    background-color: rgba(243, 156, 18, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Sidebar styling */
+.css-1d391kg {
+    background-color: #f8f9fa;
+}
+
+/* Tab styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: #f0f0f0;
+    border-radius: 8px 8px 0 0;
+    padding: 1rem 2rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Dataframe styling */
+.stDataFrame {
+    border: 1px solid rgba(243, 156, 18, 0.2);
+    border-radius: 8px;
+}
+
+/* Expander styling */
+.streamlit-expanderHeader {
+    background-color: rgba(243, 156, 18, 0.1);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Custom header colors */
+h1, h2, h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Divider styling */
+hr {
+    border-color: rgba(243, 156, 18, 0.3) !important;
+}
+
+/* Link styling */
+a {
+    color: var(--primary-color) !important;
+}
+
+a:hover {
+    color: var(--secondary-color) !important;
+}
+
+/* Card-like containers */
+.element-container {
+    transition: all 0.3s ease;
+}
+
+/* Gauge container */
+.gauge-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Preset button styling */
+.preset-button {
+    background-color: rgba(243, 156, 18, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Warning styling */
+.stWarning {
+    background-color: rgba(255, 152, 0, 0.1) !important;
+    border-left: 4px solid #FF9800 !important;
+}
+
+/* Code block styling */
+code {
+    background-color: rgba(243, 156, 18, 0.1) !important;
+    color: var(--accent-color) !important;
+    padding: 0.2rem 0.4rem !important;
+    border-radius: 4px !important;
+}

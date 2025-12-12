@@ -229,5 +229,4 @@ This section outlines key hypotheses for the Northern Hemisphere Photovoltaic An
 ## Acknowledgements (optional)
 * Williams, Jada; Wagner, Torrey (2019), “Northern Hemisphere Horizontal Photovoltaic Power Output Data for 12 Sites”, Mendeley Data, V5, doi: 10.17632/hfhwmn8w24.5
 * https://www.mdpi.com/1996-1073/13/10/2570?utm_source=chatgpt.com
-* https://news.tuoitre.vn/southern-vietnam-records-lowest-temperature-in-over-40-years-10358779.htm
-https://rajibshaw.org/wpRS/wp-content/uploads/2018/09/Vietnam-CC-and-Drought-Mekong.pdf
+
