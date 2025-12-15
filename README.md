@@ -369,66 +369,550 @@ This project demonstrates how machine learning can transform raw environmental d
 
 Beyond its practical application in energy management, this project showcases the complete data science pipeline—from hypothesis-driven exploratory analysis to deploying an accessible web application. It reflects a commitment to using analytical skills to contribute meaningfully to the energy transition and the organizations working to deliver clean, reliable power.
 
+## Machine Learning Approach
+
+### Why Location-Specific Models?
+
+The exploratory analysis revealed a critical insight: **location alone explains 11.2% of variance in solar output**, with a 2:1 performance ratio between the best and worst sites. This finding indicated that each installation operates under distinct climate regimes with non-transferable patterns. A single global model would struggle to capture these location-specific nuances, leading to the strategic decision to build **12 separate models**—one for each site.
+
+This approach allows each model to specialize in its location's unique weather patterns, seasonal behaviors, and environmental characteristics, resulting in more accurate predictions than a one-size-fits-all solution.
+
+### Feature Engineering Strategy
+
+Starting with 11 base environmental measurements, I engineered 24 additional features to capture complex, non-linear relationships that simple models might miss. The expanded feature set incorporates **solar physics principles**:
+
+**Solar Geometry Features:**
+- Solar elevation angle (sun's position above horizon)
+- Day length (hours of daylight)
+- Seasonal indicators (month as cyclical features)
+
+**Temperature Efficiency Factors:**
+- Panel efficiency declines as temperature rises
+- Temperature-humidity interaction effects
+- Heat stress indicators
+
+**Atmospheric Conditions:**
+- Atmospheric attenuation proxies (combining pressure, visibility, humidity)
+- Cloud cover impact factors
+- Wind cooling effects
+
+**Final Feature Count:** 35 engineered features from 11 base measurements
+
+This physics-informed approach ensures models understand not just correlation patterns, but the underlying mechanisms of solar power generation.
+
+### Algorithm Selection & Testing
+
+Seven different algorithms were tested at each location to find the best performer. The selection spans linear models (with regularization) and tree-based ensemble methods:
+
+<div align="center">
+
+| Algorithm | Type | Why Test It? |
+|-----------|------|--------------|
+| **Ridge Regression** | Linear with L2 regularization | Prevents overfitting with many features; interpretable coefficients; handles multicollinearity well |
+| **Lasso Regression** | Linear with L1 regularization | Automatic feature selection by zeroing weak predictors; creates sparse models |
+| **ElasticNet** | Linear with L1 + L2 | Combines Ridge and Lasso benefits; balanced approach for feature-rich datasets |
+| **Gradient Boosting** | Ensemble (sequential trees) | Builds trees iteratively to correct previous errors; excels at capturing complex patterns |
+| **XGBoost** | Optimized gradient boosting | Faster implementation with regularization; industry standard for tabular data |
+| **Random Forest** | Ensemble (parallel trees) | Reduces overfitting through bootstrap aggregation; robust to outliers |
+| **Extra Trees** | Ensemble (randomized trees) | More random than Random Forest; faster training; good generalization |
+
+</div>
+
+**Training Process:**
+- 80/20 train-test split for each location
+- Cross-validation to tune hyperparameters
+- Regularization strength adjusted to prevent overfitting
+- Best algorithm selected based on test set R² score
+
+**Model Selection Results:**
+- **Ridge Regression:** 5 locations (42%) - most frequent winner, validating regularization strategy
+- **Gradient Boosting:** 3 locations (25%) - captured complex non-linear patterns
+- **Random Forest:** 2 locations (17%) - provided robust predictions
+- **Extra Trees:** 2 locations (17%) - strong generalization
+
+The fact that different algorithms won at different locations confirms that each site has unique predictive patterns—further validating the location-specific modeling approach.
+
+---
+
+## Model Performance
+
+### Overall Results
+
+The 12 location-specific models achieved an **average R² of 0.65** with an **average prediction error of 2.92 kW (RMSE)**. Nine out of twelve locations (75%) meet the deployment threshold of R² > 0.60, indicating reliable predictions suitable for operational use.
+
+**What Does R² = 0.65 Mean?**
+
+R² measures how much of the variance in solar output the model can explain. An R² of 0.65 means the model accounts for 65% of the variability in power generation. For environmental prediction tasks—where weather, cloud patterns, and atmospheric conditions are inherently noisy—this represents **solid performance**. Perfect predictions (R² = 1.0) are virtually impossible without real-time irradiance sensors directly measuring sunlight hitting the panels.
+
+### Performance by Location
+
+<div align="center">
+
+| Location | R² Score | RMSE (kW) | MAE (kW) | Best Algorithm | Performance Tier |
+|----------|----------|-----------|----------|----------------|------------------|
+| **Travis AFB** | 0.79 | 2.31 | 1.68 | Gradient Boosting | ⭐ Strong |
+| **Camp Murray** | 0.73 | 2.54 | 1.89 | Ridge | ⭐ Strong |
+| **Hill Weber** | 0.73 | 2.48 | 1.82 | Extra Trees | ⭐ Strong |
+| **MNANG** | 0.72 | 2.61 | 1.94 | Ridge | ⭐ Strong |
+| **March AFB** | 0.69 | 2.77 | 2.06 | Gradient Boosting | ✅ Good |
+| **Peterson AFB** | 0.67 | 2.89 | 2.15 | Random Forest | ✅ Good |
+| **Grissom AFB** | 0.66 | 2.94 | 2.19 | Ridge | ✅ Good |
+| **Selfridge** | 0.64 | 3.01 | 2.24 | Ridge | ✅ Good |
+| **Offutt AFB** | 0.62 | 3.12 | 2.32 | Extra Trees | ✅ Good |
+| **JDMT** | 0.58 | 3.28 | 2.44 | Ridge | ⚠️ Moderate |
+| **USAFA** | 0.56 | 3.35 | 2.49 | Random Forest | ⚠️ Moderate |
+| **Kahului** | 0.44 | 3.79 | 2.82 | Gradient Boosting | ⚠️ Challenging |
+
+</div>
+
+### Key Observations
+
+**Top Performers (R² > 0.70):**
+- **Travis AFB** leads with R² = 0.79 and lowest prediction error (2.31 kW RMSE)
+- Top four locations cluster in the 0.70-0.79 range, demonstrating strong predictive capability
+- These sites benefit from consistent weather patterns and robust datasets
+
+**Solid Performers (0.60 ≤ R² < 0.70):**
+- Five locations achieve good performance suitable for operational forecasting
+- Prediction errors remain under 3.2 kW, acceptable for grid planning purposes
+
+**Challenging Locations (R² < 0.60):**
+- **Kahului** (Hawaii) proves most difficult at R² = 0.44 due to unique island climate, limited data, and weak seasonal patterns
+- **USAFA and JDMT** fall slightly below deployment threshold but still provide useful directional guidance
+- These models are functional but carry higher uncertainty—predictions should be interpreted cautiously
+
+### Overfitting Control
+
+Train-test performance gaps remain small (0.07-0.18 on average), confirming models generalize well and aren't memorizing training data. Some locations (Grissom, Offutt) even show test performance exceeding training scores, indicating robust generalization.
+
+### Practical Implications
+
+With an average error of ~3 kW on systems generating 0-35 kW, these models provide actionable forecasts for:
+- **Grid planning:** Anticipating generation capacity hours ahead
+- **Maintenance scheduling:** Identifying low-output periods for service work
+- **Energy storage optimization:** Charging batteries when solar output peaks
+- **Operational decisions:** Understanding site-specific performance patterns
+
+Nine locations are production-ready for deployment, while the three weaker performers can still inform decision-making with appropriate caution about prediction uncertainty.
+
+## Features
+
+The **Northern Hemisphere Photovoltaic Analysis** web application provides an intuitive interface for exploring solar power data, generating predictions, and understanding model performance. Built with Streamlit, the app is designed for both technical and non-technical stakeholders.
+
+### Dashboard (Main Page)
+
+**What It Does:**
+- Presents project overview and motivation
+- Displays dataset statistics and geographic distribution of 12 military installations
+- Showcases key findings from exploratory data analysis
+- Includes visualizations showing:
+  - Solar output patterns by time of day and season
+  - Environmental factor correlations (humidity, cloud ceiling, temperature)
+  - Location-based performance comparisons
+  
+**Who It's For:** Anyone wanting to understand the project scope, data, and analytical findings without diving into code.
+
+### Predict Page
+
+**What It Does:**
+- Interactive prediction tool where users input current weather conditions
+- Generates real-time solar power forecasts using trained machine learning models
+- Features include:
+  - **Location selector:** Choose from 12 military installations
+  - **Weather inputs:** Sliders for temperature, humidity, wind speed, visibility, pressure, cloud ceiling (values constrained to realistic ranges)
+  - **Time inputs:** Month and hour of day selectors
+  - **Instant predictions:** Displays forecasted power output in kilowatts
+  - **PDF export:** Download prediction reports for documentation
+
+**Who It's For:** Energy managers, grid operators, and facility planners needing quick solar output forecasts for operational decisions.
+
+**Example Use Case:** *"It's January 15th at 2 PM, temperature is 8°C, humidity 65%, clear skies. What power output should I expect at Travis AFB?"*
+
+### Performance Page
+
+**What It Does:**
+- Comprehensive model evaluation metrics for all 12 locations
+- Displays accuracy indicators:
+  - **R² scores:** How well models explain variance
+  - **RMSE (Root Mean Square Error):** Average prediction error in kW
+  - **MAE (Mean Absolute Error):** Typical error magnitude
+- Performance visualizations:
+  - Predictions vs Actuals scatter plots
+  - Residual analysis charts
+  - Feature importance rankings
+  - Performance tier rankings
+- Includes helpful explanations of metrics for non-technical users
+
+**Who It's For:** Technical stakeholders evaluating model reliability and data scientists interested in methodology.
+
+### User Experience Features
+
+- **Clean amber/orange theme:** Reflects solar energy domain
+- **Help sections:** Plain-language explanations of ML concepts
+- **Slider inputs:** Ensures users select valid values within realistic ranges
+- **Dynamic data loading:** Performance metrics reflect actual training results (not hardcoded)
+
+## Technical Stack
+
+### **Programming Language**
+- **Python 3.9+** - Core language for data science pipeline and web application
+
+### **Data Processing & Analysis**
+- **pandas** - Data manipulation and cleaning
+- **NumPy** - Numerical operations and array processing
+- **SciPy** - Statistical hypothesis testing (ANOVA, Kruskal-Wallis)
+
+### **Machine Learning**
+- **scikit-learn** - ML algorithms, model training, evaluation metrics
+  - Ridge, Lasso, ElasticNet regression
+  - Gradient Boosting, Random Forest, Extra Trees
+- **XGBoost** - Optimized gradient boosting implementation
+- **joblib** - Model serialization and loading
+
+### **Data Visualization**
+- **Matplotlib** - Static plotting and charts
+- **Seaborn** - Statistical visualizations
+- **Plotly** - Interactive 3D visualizations
+
+### **Web Application**
+- **Streamlit** - Web framework for data science applications
+- **ReportLab** - PDF report generation
+
+### **Development Tools**
+- **Jupyter Notebook** - Interactive analysis and documentation
+- **Git** - Version control
+- **VS Code** - Code editor
+
+### **Deployment**
+- **Streamlit Community Cloud** - Free cloud hosting
+- **GitHub** - Code repository 
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+
+Before running the application locally, ensure you have:
+- **Python 3.9 or higher** installed ([Download Python](https://www.python.org/downloads/))
+- **Git** installed ([Download Git](https://git-scm.com/downloads))
+- Basic familiarity with command line/terminal
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/your-username/northern-hemisphere-photovoltaic-analysis.git
+cd northern-hemisphere-photovoltaic-analysis
+```
+
+### Step 2: Create Virtual Environment
+
+**Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**macOS/Linux:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+**Key dependencies include:**
+- streamlit
+- pandas
+- numpy
+- scikit-learn
+- xgboost
+- matplotlib
+- seaborn
+- plotly
+- reportlab
+- scipy
+
+### Step 4: Train Models or Download Pre-trained Models
+
+**Option A - Train models yourself (recommended for learning):**
+1. Open and run `jupyter_notebooks/ML.ipynb` sequentially from top to bottom
+2. Models will be automatically saved to the `models/` directory
+3. Training takes approximately 1-2 minutes (depending on your hardware)
+
+**Option B - Download pre-trained models (quick start):**
+1. Download the pre-trained models: [ Download Models (Google Drive)](https://drive.google.com/file/d/1lLHpV9iYEQnUMeiJx-gR65XfCEA2UiKN/view?usp=drive_link)
+2. Extract the downloaded file
+3. Place all 12 `.pkl` files into the `models/` directory
+
+**Verify models are ready:**
+```bash
+ls models/*.pkl
+# Should show 12 model files (one per location)
+```
+
+The application will automatically open in your default web browser at `http://localhost:8501`
+
+### Troubleshooting
+
+**Issue: ModuleNotFoundError**
+- Solution: Ensure virtual environment is activated and all dependencies installed
+
+**Issue: FileNotFoundError for models**
+- Solution: Verify all 12 `.pkl` model files exist in the `models/` directory
+
+**Issue: Port already in use**
+- Solution: Run `streamlit run app.py --server.port 8502` to use a different port
+
+**Issue: Data file not found**
+- Solution: Check that `data/clean/photovoltaic_clean.csv` exists with correct path
+
+### Development Mode
+
+To run the app with auto-reload during development:
+```bash
+streamlit run app.py --server.runOnSave true
+```
 
 
-## Ethical considerations
-* Were there any data privacy, bias or fairness issues with the data?
-* How did you overcome any legal or societal issues?
+## Usage Guide
 
-## Dashboard Design
-* List all dashboard pages and their content, either blocks of information or widgets, like buttons, checkboxes, images, or any other item that your dashboard library supports.
-* Later, during the project development, you may revisit your dashboard plan to update a given feature (for example, at the beginning of the project you were confident you would use a given plot to display an insight but subsequently you used another plot type).
-* How were data insights communicated to technical and non-technical audiences?
-* Explain how the dashboard was designed to communicate complex data insights to different audiences. 
+### Getting Started
 
-## Unfixed Bugs
-* Please mention unfixed bugs and why they were not fixed. This section should include shortcomings of the frameworks or technologies used. Although time can be a significant variable to consider, paucity of time and difficulty understanding implementation are not valid reasons to leave bugs unfixed.
-* Did you recognise gaps in your knowledge, and how did you address them?
-* If applicable, include evidence of feedback received (from peers or instructors) and how it improved your approach or understanding.
+1. **Launch the application** using the installation steps above, or visit the [deployed version](https://your-app-url.streamlit.app) *(coming soon)*
 
-## Development Roadmap
-* What challenges did you face, and what strategies were used to overcome these challenges?
-* What new skills or tools do you plan to learn next based on your project experience? 
+2. **Navigate the app** using the sidebar menu with three main pages:
+   -  Dashboard
+   -  Performance
+   -  Predict
+
+### Using the Dashboard Page
+
+**Purpose:** Understand the project scope and key findings
+
+1. Read the project overview and motivation
+2. Review dataset statistics and location map
+3. Explore EDA findings:
+   - Scroll through visualizations showing temporal patterns
+   - Examine correlation analyses
+   - Review hypothesis testing results
+4. Note the key insight: **location explains 11.2% of variance**
+
+**No interaction required** - this page is informational only.
+
+### Using the Predict Page
+
+**Purpose:** Generate solar power forecasts for specific conditions
+
+**Step-by-Step:**
+
+1. **Select Location** from dropdown (12 military installations available)
+
+2. **Input Weather Conditions:**
+   - **Temperature (°C):** Current ambient temperature (-20 to 40°C)
+   - **Humidity (%):** Relative humidity (20 to 100%)
+   - **Wind Speed (m/s):** Current wind speed (0 to 20 m/s)
+   - **Visibility (km):** Horizontal visibility distance (0 to 20 km)
+   - **Pressure (hPa):** Atmospheric pressure (900 to 1050 hPa)
+   - **Cloud Ceiling (feet):** Height of lowest cloud layer (0 to 30,000 feet)
+
+3. **Set Time Parameters:**
+   - **Month:** Select month (1-12)
+   - **Hour:** Select hour of day (0-23, military time)
+
+4. **Click "Generate Prediction"**
+
+5. **Review Results:**
+   - Predicted power output displayed in kilowatts (kW)
+   - Model confidence indicator
+   - Location-specific context
+
+6. **Optional: Export PDF Report**
+   - Click "Download PDF Report" button
+   - Save detailed prediction with input parameters and model information
+
+**Tips for Best Results:**
+- Use realistic weather values for the selected location
+- Predictions are only valid for hours 10-15 (peak solar production hours) - the models were trained exclusively on midday data when panels generate meaningful power
+- For locations marked "challenging" (Kahului, USAFA, JDMT), interpret results cautiously
+
+**Example Scenario:**
+```
+Location: Travis AFB
+Date: June 15 (Month: 6)
+Time: 13:00 (Hour: 13)
+Temperature: 28°C
+Humidity: 45%
+Wind Speed: 3 m/s
+Visibility: 15 km
+Pressure: 1013 hPa
+Cloud Ceiling: 25,000 feet (clear skies)
+
+Expected Output: ~18-22 kW (peak summer performance)
+```
+
+### Using the Performance Page
+
+**Purpose:** Evaluate model accuracy and understand limitations
+
+1. **Review Overall Statistics:**
+   - Average R² across all locations
+   - Average prediction error (RMSE)
+   - Deployment readiness summary
+
+2. **Examine Location-Specific Metrics:**
+   - Scroll through the performance table
+   - Identify top performers (Travis, Camp Murray, Hill Weber, MNANG)
+   - Note challenging locations (Kahului, USAFA, JDMT)
+
+3. **Explore Visualizations:**
+   - **Predictions vs Actuals:** See how well models match reality
+   - **Residual Plots:** Check for systematic biases
+   - **Feature Importance:** Understand what drives predictions
+   - **Performance Rankings:** Compare locations at a glance
+
+4. **Read Metric Explanations:**
+   - Click lightbulb icons (💡) for plain-language definitions
+   - Understand what R², RMSE, and MAE mean in practice
+
+**Understanding the Tiers:**
+-  **Strong (R² > 0.70):** Highly reliable for operational use
+-  **Good (0.60 ≤ R² < 0.70):** Suitable for planning and forecasting
+-  **Moderate/Challenging (R² < 0.60):** Use with caution; higher uncertainty
+
+### Sharing Results
+
+- **Screenshots**: Capture visualizations for presentations
+- **PDF Reports**: Export predictions with full context
+- **Deployment URL**: Share app link with stakeholders (no installation required)
+
+## Future Improvements
+
+While the current system demonstrates solid predictive capabilities with an average R² of 0.65, several enhancements could improve accuracy, expand functionality, and increase practical value for energy management stakeholders.
+
+### Enhancing Prediction Accuracy
+
+**Addressing Underperforming Locations**
+
+Three installations (Kahului, USAFA, JDMT) currently achieve lower accuracy scores. Kahului presents particular challenges due to its unique island microclimate and limited training observations. Potential approaches include collecting additional site-specific data, exploring alternative algorithms such as neural networks, or developing specialized feature sets that capture location-specific atmospheric patterns.
+
+**Improving Extreme Condition Predictions**
+
+Analysis reveals that models occasionally underestimate output during optimal weather conditions (clear skies, moderate temperatures, high solar elevation). Developing separate prediction pathways for extreme scenarios or incorporating specialized features for rare high-output conditions would improve forecast reliability across the full operational range.
+
+### Enhancing User Interactivity
+
+**Interactive Geographic Visualization**
+
+Replacing the static location selector with an interactive map interface would provide:
+- Direct selection via clickable installation markers
+- Real-time performance indicators with color-coded status
+- Hover-activated quick statistics (average output, model accuracy tier)
+- Pan and zoom controls for regional context
+
+**Multi-Location Comparison Dashboard**
+
+A comparative analysis interface would allow simultaneous evaluation across multiple installations:
+- Side-by-side prediction displays with synchronized weather inputs
+- Toggle controls to focus on specific location subsets
+- Interactive charts showing relative performance under varying conditions
+- Exportable comparison reports for stakeholder presentations
+
+**Historical Performance Explorer**
+
+Interactive time-series visualization would provide:
+- Actual versus predicted performance tracking
+- Seasonal trend analysis with adjustable time ranges
+- Animation features demonstrating typical generation patterns
+- Data export functionality for external analysis
+
+### Research and Validation Extensions
+
+**Transfer Learning Between Similar Climates**
+
+Investigating whether models trained on one location can generalize to climatically similar sites could reduce data requirements for new installations. For example, testing whether the Travis AFB model performs adequately at nearby March AFB would validate potential efficiency gains in model deployment.
+
+**Prediction Uncertainty Quantification**
+
+Implementing probabilistic forecasting with confidence intervals would enhance decision support. Rather than point predictions, the system would provide ranges (e.g., "17 kW ± 2 kW with 95% confidence"), enabling more sophisticated risk assessment for critical operational decisions. Approaches include quantile regression or bootstrap resampling.
+
+**Long-Term Performance Validation**
+
+Testing model accuracy on recent data (2024-2025) would verify sustained performance and detect potential degradation due to climate shifts or data drift. This validation would confirm whether recalibration or retraining is necessary to maintain operational reliability.
+
+---
+
+## Lessons Learned
+
+**Statistical Significance vs Practical Significance**
+
+The altitude hypothesis provided a crucial lesson: with 20,000+ observations, statistical tests can detect tiny effects that don't matter in practice. Despite a highly significant p-value (< 0.001), altitude explained only 0.5% of variance—essentially negligible. This reinforced the importance of always examining effect sizes alongside p-values, especially with large datasets where even trivial patterns become "statistically significant."
+
+**Location-Specific Modeling Strategy**
+
+Initially, the plan was to build one global model using location as a feature. However, EDA revealed that location alone explains 11.2% of variance with a 2:1 performance ratio between sites. This finding drove the decision to build 12 separate models, allowing each to specialize in its installation's unique climate patterns. The result: significantly better predictions than a generalized approach would have achieved.
+
+**Building My First Streamlit Application**
+
+This was my first experience developing a Streamlit web application, and the learning curve was steep but rewarding. Key lessons included:
+
+- **File organization matters**: Structuring the app with separate pages and utility modules made development much more manageable than cramming everything into one file
+- **Dynamic data loading**: Learning to load model performance metrics from CSV files rather than hardcoding values ensures the app always reflects actual training results
+- **User experience thinking**: Designing for non-technical stakeholders meant adding help sections, clear explanations, and slider controls instead of free text inputs
+- **Deployment considerations**: Understanding the difference between local development and cloud deployment (file paths, dependencies, environment setup)
+
+**Feature Engineering Impact**
+
+Starting with 11 base measurements and expanding to 35 engineered features—incorporating solar physics like elevation angles, temperature efficiency factors, and atmospheric attenuation—made a tangible difference in model performance. This validated that domain knowledge combined with machine learning produces better results than algorithms alone.
+
+**When Models Struggle**
+
+Not all locations achieved strong performance, and that's okay. Rather than forcing better metrics through overfitting, accepting that Kahului's unique island climate and limited data yield R² = 0.44 was the honest approach. Documenting these limitations transparently builds trust with stakeholders more than overpromising accuracy.
 
 ## Deployment
-### Heroku
 
-* The App live link is: https://YOUR_APP_NAME.herokuapp.com/ 
-* Set the runtime.txt Python version to a [Heroku-20](https://devcenter.heroku.com/articles/python-support#supported-runtimes) stack currently supported version.
-* The project was deployed to Heroku using the following steps.
+**Live Application:** [View App](https://your-app-url.streamlit.app) *(coming soon)*
 
-1. Log in to Heroku and create an App
-2. From the Deploy tab, select GitHub as the deployment method.
-3. Select your repository name and click Search. Once it is found, click Connect.
-4. Select the branch you want to deploy, then click Deploy Branch.
-5. The deployment process should happen smoothly if all deployment files are fully functional. Click now the button Open App on the top of the page to access your App.
-6. If the slug size is too large then add large files not required for the app to the .slugignore file.
+**Deployment Platform:** Streamlit Community Cloud (free tier)
 
+**Requirements:** All dependencies are specified in `requirements.txt` and will be installed automatically during deployment.
 
-## Main Data Analysis Libraries
-* Here you should list the libraries you used in the project and provide an example(s) of how you used these libraries.
+## Acknowledgments
 
+### Dataset
 
-## Credits 
+This project uses the **Northern Hemisphere Horizontal Photovoltaic Power Output Dataset** published by Williams, Jada and Wagner, Torrey:
 
-* In this section, you need to reference where you got your content, media and extra help from. It is common practice to use code from other repositories and tutorials, however, it is important to be very specific about these sources to avoid plagiarism. 
-* You can break the credits section up into Content and Media, depending on what you have included in your project. 
+**Citation:**
+> Williams, J., & Wagner, T. (2019). Northern Hemisphere Horizontal Photovoltaic Power Output Data for 12 Sites. *Mendeley Data*, V5. https://doi.org/10.17632/hfhwmn8w24.5
 
-### Content 
+**Associated Research Paper:**
+> Williams, J., & Wagner, T. (2020). Machine Learning Modeling of Horizontal Photovoltaics Using Weather and Location Data. *Energies*, 13(10), 2570. https://doi.org/10.3390/en13102570
 
-- Logo downloaded: https://www.pikpng.com/
-- The text for the Home page was taken from Wikipedia Article A
-- Instructions on how to implement form validation on the Sign-Up page was taken from [Specific YouTube Tutorial](https://www.youtube.com/)
-- The icons in the footer were taken from [Font Awesome](https://fontawesome.com/)
+### Resources
 
-### Media
+**Logo:**
+- Solar panel graphics sourced from [PikPNG](https://www.pikpng.com/) (free for personal/educational use)
 
-- The photos used on the home and sign-up page are from This Open-Source site
-- The images used for the gallery page were taken from this other open-source site
+**Technical Documentation:**
+- Streamlit documentation: https://docs.streamlit.io
+- scikit-learn user guide: https://scikit-learn.org/stable/user_guide.html
+- XGBoost documentation: https://xgboost.readthedocs.io
 
+### Tools & Frameworks
 
+This project was built using open-source tools including Python, Streamlit, scikit-learn, pandas, matplotlib, seaborn, and plotly. Thank you to the open-source community for making these powerful tools freely available.
 
-## Acknowledgements (optional)
-* Williams, Jada; Wagner, Torrey (2019), “Northern Hemisphere Horizontal Photovoltaic Power Output Data for 12 Sites”, Mendeley Data, V5, doi: 10.17632/hfhwmn8w24.5
-* https://www.mdpi.com/1996-1073/13/10/2570?utm_source=chatgpt.com
+## Contact
 
+**Desi Ilieva** | Junior Data Analyst
+
+📧 **Email:** db.ilieva@gmail.com
+
+💼 **LinkedIn:** [Connect with me](www.linkedin.com/in/desislava-ilieva-uk)
+
+---
+
+*This project is part of my data science portfolio demonstrating end-to-end machine learning workflow from data cleaning through model deployment.*

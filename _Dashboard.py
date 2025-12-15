@@ -64,6 +64,9 @@ with st.sidebar:
     
     st.markdown("###")  # Add spacing at bottom
 
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("📖 [View Full Documentation](https://github.com/desi0302/northern-hemisphere-photovoltaic-analysis/blob/main/README.md)")
+
 # Header
 st.title(f"{APP_CONFIG['icon']} Northern Hemisphere Solar Power Prediction")
 st.markdown("### Machine Learning-Based Photovoltaic Power Output Prediction System")
@@ -115,6 +118,7 @@ with st.expander("💡 Quick Guide - About This Project", expanded=False):
     """)
 
 st.markdown("---")
+
 
 # Project Overview
 st.header("Project Overview")

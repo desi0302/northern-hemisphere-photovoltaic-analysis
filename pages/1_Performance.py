@@ -81,6 +81,9 @@ with st.sidebar:
     
     st.markdown("###")  # Add spacing at bottom
 
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("📖 [View ML Training Details](https://github.com/desi0302/northern-hemisphere-photovoltaic-analysis/blob/main/jupyter_notebooks/ML.ipynb)")
+
 # Page title
 st.title("📊 Model Performance Dashboard")
 st.markdown("Compare model accuracy and performance metrics across all 12 monitoring locations.")
