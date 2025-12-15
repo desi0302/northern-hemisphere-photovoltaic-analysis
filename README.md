@@ -9,7 +9,8 @@
     <td>
       <h1>Northern Hemisphere Photovoltaic Analysis</h1>
 
-**Northern Hemisphere Photovoltaic Analysis** is a comprehensive machine learning project that predicts solar power generation across 12 military installations in the Northern Hemisphere. By analyzing weather conditions, geographic features, and time-based patterns, this project helps energy managers forecast photovoltaic output and optimize renewable energy operations.
+[Northern Hemisphere Photovoltaic Analysis](https://solarpower.streamlit.app/)
+is a comprehensive machine learning project that predicts solar power generation across 12 military installations in the Northern Hemisphere. By analyzing weather conditions, geographic features, and time-based patterns, this project helps energy managers forecast photovoltaic output and optimize renewable energy operations.
 
 The project follows the complete data science pipeline—from **data cleaning and exploratory analysis** to **building location-specific predictive models** and deploying an **interactive web application**. With over 20,000 observations spanning 14 months (2017-2018), the analysis reveals how environmental factors like temperature, humidity, and cloud cover impact solar efficiency across diverse climate regions.
 
@@ -785,7 +786,7 @@ Expected Output: ~18-22 kW (peak summer performance)
 ### Sharing Results
 
 - **Screenshots**: Capture visualizations for presentations
-- **PDF Reports**: Export predictions with full context
+- **PDF Reports**: Export predictions with full context (on the Predict page)
 - **Deployment URL**: Share app link with stakeholders (no installation required)
 
 ## Future Improvements
@@ -877,7 +878,7 @@ Not all locations achieved strong performance, and that's okay. Rather than forc
 
 ## Deployment
 
-**Live Application:** [View App](https://your-app-url.streamlit.app) *(coming soon)*
+**Live Application:** [View App](https://solarpower.streamlit.app/)
 
 **Deployment Platform:** Streamlit Community Cloud (free tier)
 
