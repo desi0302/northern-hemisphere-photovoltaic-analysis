@@ -863,6 +863,10 @@ This was my first experience developing a Streamlit web application, and the lea
 - **User experience thinking**: Designing for non-technical stakeholders meant adding help sections, clear explanations, and slider controls instead of free text inputs
 - **Deployment considerations**: Understanding the difference between local development and cloud deployment (file paths, dependencies, environment setup)
 
+**Dependency Management for Cloud Deployment**
+
+Initial deployment attempts failed due to overly strict package version requirements. The lesson: local development and cloud deployment have different needs. Changing `requirements.txt` from exact versions (`==`) to minimum versions (`>=`) gave Streamlit Cloud the flexibility to resolve dependencies automatically. Using major.minor versioning (e.g., `pandas>=2.0.0` instead of `pandas==2.0.3`) prevented conflicts while maintaining compatibility. This approach—relaxed but bounded version constraints—is standard practice for production deployments where the hosting environment needs flexibility to install compatible package combinations.
+
 **Feature Engineering Impact**
 
 Starting with 11 base measurements and expanding to 35 engineered features—incorporating solar physics like elevation angles, temperature efficiency factors, and atmospheric attenuation—made a tangible difference in model performance. This validated that domain knowledge combined with machine learning produces better results than algorithms alone.
