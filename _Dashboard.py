@@ -100,7 +100,7 @@ with st.expander("💡 Quick Guide - About This Project", expanded=False):
             <p><strong>Dashboard:</strong> Explore data and findings<br/>
             <strong>Predict:</strong> Get power predictions<br/>
             <strong>Performance:</strong> View model accuracy</p>
-            <p style='margin-top: 1rem;'><em>Navigate using the sidebar →</em></p>
+            <p style='margin-top: 1rem;'><em>Navigate using the sidebar menu</em></p>
         </div>
         """, unsafe_allow_html=True)
     
