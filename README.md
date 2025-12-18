@@ -133,6 +133,30 @@ This rich dataset enables analysis of how **weather patterns, time of day, seaso
 
 This project addresses real-world challenges in solar energy management across multiple military installations. The goal is to build predictive models and analytical tools that help energy managers make informed decisions about grid operations, maintenance scheduling, and renewable energy optimization.
 
+## Application Preview
+
+The deployed application provides three main interfaces for exploring the analysis and generating predictions:
+
+*Dashboard: Exploratory analysis findings and key insights*
+
+![Dashboard Screenshot](images/app1.png)
+
+
+
+
+*Performance: Model accuracy metrics and comparison across locations*
+
+![Performance Screenshot](images/app7.png)
+
+*Predict: Interactive tool for generating solar power forecasts*
+
+![Predict Screenshot](images/app8.png)
+
+![Predict Screenshot](images/app8.png)
+
+
+Visit the live application: [solarpower.streamlit.app](https://solarpower.streamlit.app/)
+
 ### Project Objectives
 
 | # | Requirement | What Success Looks Like |
@@ -160,6 +184,9 @@ Before diving into modeling, I developed testable hypotheses about what factors 
 | 3 | **Solar output peaks in summer and at midday** | Used two-way ANOVA to test effects of `Month` and `Hour` on `PolyPwr`, including interaction effects. Visualized with boxplots and heatmaps. | ✓ **Strongly Supported** - Significant month effect (F = 347), hour effect (F = 168), and interaction (p < 0.001) |
 | 4 | **Altitude affects solar panel efficiency** | Compared `PolyPwr` across altitude bins using Kruskal-Wallis test; calculated effect size (ε²) to assess practical significance. | ✗ **Rejected** - Statistically significant but negligible effect size (ε² = 0.005) indicates spurious relationship |
 | 5 | **Location is a major factor in performance** | Performed one-way ANOVA comparing `PolyPwr` across 12 locations; calculated eta-squared (η²) for effect size; compared site averages. | ✓ **Strongly Supported** - Large effect (η² = 0.112, F = 240); 2:1 performance ratio between sites |
+
+![Hypothesis Testing Summary](images/hip.png)
+
 
 **Key Insights:** 
 
@@ -502,6 +529,7 @@ The **Northern Hemisphere Photovoltaic Analysis** web application provides an in
 
 ### Dashboard (Main Page)
 
+**Live Application:** [View Dashboard](https://solarpower.streamlit.app/)
 **What It Does:**
 - Presents project overview and motivation
 - Displays dataset statistics and geographic distribution of 12 military installations
@@ -514,6 +542,8 @@ The **Northern Hemisphere Photovoltaic Analysis** web application provides an in
 **Who It's For:** Anyone wanting to understand the project scope, data, and analytical findings without diving into code.
 
 ### Predict Page
+
+**Live Application:** [View Predict Page](https://solarpower.streamlit.app/Predict)
 
 **What It Does:**
 - Interactive prediction tool where users input current weather conditions
@@ -530,6 +560,8 @@ The **Northern Hemisphere Photovoltaic Analysis** web application provides an in
 **Example Use Case:** *"It's January 15th at 2 PM, temperature is 8°C, humidity 65%, clear skies. What power output should I expect at Travis AFB?"*
 
 ### Performance Page
+
+**Live Application:** [View Predict Page](https://solarpower.streamlit.app/Performance)
 
 **What It Does:**
 - Comprehensive model evaluation metrics for all 12 locations
@@ -623,18 +655,7 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
-
-**Key dependencies include:**
-- streamlit
-- pandas
-- numpy
-- scikit-learn
-- xgboost
-- matplotlib
-- seaborn
-- plotly
-- reportlab
-- scipy
+![Requirements](images/req.png)
 
 ### Step 4: Train Models or Download Pre-trained Models
 
@@ -682,7 +703,7 @@ streamlit run app.py --server.runOnSave true
 
 ### Getting Started
 
-1. **Launch the application** using the installation steps above, or visit the [deployed version](https://your-app-url.streamlit.app) *(coming soon)*
+1. **Launch the application** using the installation steps above, or visit the [deployed version](https://solarpower.streamlit.app/)
 
 2. **Navigate the app** using the sidebar menu with three main pages:
    -  Dashboard
@@ -863,6 +884,7 @@ This was my first experience developing a Streamlit web application, and the lea
 - **Dynamic data loading**: Learning to load model performance metrics from CSV files rather than hardcoding values ensures the app always reflects actual training results
 - **User experience thinking**: Designing for non-technical stakeholders meant adding help sections, clear explanations, and slider controls instead of free text inputs
 - **Deployment considerations**: Understanding the difference between local development and cloud deployment (file paths, dependencies, environment setup)
+- **Leveraging AI for Development Efficiency**: Used Claude as a technical consultant for debugging deployment issues, refining code structure, and exploring implementation approaches. While AI assistance accelerated development, all core analytical decisions—hypothesis validation, modeling strategy, feature engineering approaches—remained human-driven. This balance allowed me to maintain project ownership while learning best practices more efficiently.
 
 **Dependency Management for Cloud Deployment**
 
@@ -888,7 +910,11 @@ Not all locations achieved strong performance, and that's okay. Rather than forc
 
 ### Dataset
 
-This project uses the **Northern Hemisphere Horizontal Photovoltaic Power Output Dataset** published by Williams, Jada and Wagner, Torrey:
+This project uses the **Northern Hemisphere Horizontal Photovoltaic Power Output Dataset** on Kaggle, originally published by John Williams and Thomas Wagner.
+
+<a href="https://www.kaggle.com/datasets/johnwilliams01/northern-hemisphere-horizontal-photovoltaic-power-output-data">
+  <img src="https://www.kaggle.com/static/images/site-logo.svg" alt="Kaggle" width="100">
+</a>
 
 **Citation:**
 > Williams, J., & Wagner, T. (2019). Northern Hemisphere Horizontal Photovoltaic Power Output Data for 12 Sites. *Mendeley Data*, V5. https://doi.org/10.17632/hfhwmn8w24.5
@@ -899,7 +925,11 @@ This project uses the **Northern Hemisphere Horizontal Photovoltaic Power Output
 ### Resources
 
 **Logo:**
-- Solar panel graphics sourced from [PikPNG](https://www.pikpng.com/) (free for personal/educational use)
+<a href="https://www.pikpng.com/">
+  <img src="images/logomax5.png" alt="PikPNG" height="20">
+</a>  
+
+Solar panel graphics sourced from PikPNG (free for personal/educational use)
 
 **Technical Documentation:**
 - Streamlit documentation: https://docs.streamlit.io
@@ -908,7 +938,7 @@ This project uses the **Northern Hemisphere Horizontal Photovoltaic Power Output
 
 ### Tools & Frameworks
 
-This project was built using open-source tools including Python, Streamlit, scikit-learn, pandas, matplotlib, seaborn, and plotly. Thank you to the open-source community for making these powerful tools freely available.
+This project was built using open-source tools including Python, Streamlit, scikit-learn, pandas, matplotlib, seaborn, and plotly. Thank you to the open-source community for making these powerful tools freely available.The project benefited from technical consultation with Claude (Anthropic) for code optimization, debugging assistance, and architectural guidance. All analytical decisions, modeling strategies, and data science methodologies were independently developed and validated.
 
 ## Contact
 
